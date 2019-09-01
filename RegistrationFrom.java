@@ -236,6 +236,14 @@ return conn;
       
       
        pstm.execute();
+              txt_name.setText(" ");
+               Password.setText(" ");
+                txt_id.setText(" ");
+                 txt_1st_name.setText(" ");
+                  txt_2st_name.setText(" ");
+                   txt_email.setText(" ");
+                    txt_address.setText(" ");
+
       JOptionPane.showMessageDialog(null, "Data Submission");
       }catch(Exception e){
           JOptionPane.showMessageDialog(null, e);
