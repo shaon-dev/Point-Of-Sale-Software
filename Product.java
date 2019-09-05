@@ -10,7 +10,13 @@ import com.mysql.jdbc.Statement;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import net.proteanit.sql.DbUtils;
+
 
 
 /**
@@ -23,6 +29,7 @@ public class Product extends javax.swing.JFrame {
 Statement at;
 Connection con;
 ResultSet rs;
+ java.sql.Statement stm;
 public static Connection ConnectDB(){
 
 try{
@@ -66,6 +73,10 @@ return conn;
         txt_amount = new javax.swing.JTextField();
         btn_product_add = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        btn_show_table = new javax.swing.JButton();
+        btn_delete = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        disply_tab = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -108,6 +119,20 @@ return conn;
             }
         });
 
+        btn_show_table.setText("Show me");
+        btn_show_table.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_show_tableActionPerformed(evt);
+            }
+        });
+
+        btn_delete.setText("Product Delete ");
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -135,9 +160,13 @@ return conn;
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(220, 220, 220)
                                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 221, Short.MAX_VALUE))
+                        .addGap(0, 95, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btn_delete)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_show_table)
+                        .addGap(35, 35, 35)
                         .addComponent(btn_product_add)
                         .addGap(28, 28, 28)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -168,25 +197,66 @@ return conn;
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(txt_amount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_product_add)
-                    .addComponent(jButton2))
+                    .addComponent(jButton2)
+                    .addComponent(btn_show_table)
+                    .addComponent(btn_delete))
                 .addContainerGap())
         );
+
+        disply_tab.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Product ID", "Product Name", "Product Price", "Product Quantity", "Total Amount"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.Float.class, java.lang.Float.class, java.lang.Float.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        disply_tab.setVerifyInputWhenFocusTarget(false);
+        disply_tab.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                disply_tabMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(disply_tab);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 56, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(43, Short.MAX_VALUE))
         );
 
         pack();
@@ -240,6 +310,59 @@ String sum1=String.valueOf(sum);
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_amountActionPerformed
 
+    private void disply_tabMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disply_tabMouseClicked
+      DefaultTableModel model= (DefaultTableModel)disply_tab.getModel();
+      int selectedRowIndex= disply_tab.getSelectedRow();
+      
+      txt_id.setText(model.getValueAt(selectedRowIndex, 0).toString());
+     txt_name.setText(model.getValueAt(selectedRowIndex, 1).toString());
+      txt_price.setText(model.getValueAt(selectedRowIndex, 2).toString());
+      txt_quantity.setText(model.getValueAt(selectedRowIndex, 3).toString());
+     // txt_amount.setText(model.getValueAt(selectedRowIndex, 5).toString());
+      
+    }//GEN-LAST:event_disply_tabMouseClicked
+
+    private void btn_show_tableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_show_tableActionPerformed
+           String sql="select P_id,P_name,P_price,P_Quantity,P_amount from product";
+        
+
+           
+           
+          try {
+           pstm=con.prepareStatement(sql);
+           
+           //stm=  con.createStatement();
+           rs=pstm.executeQuery(sql);
+           disply_tab.setModel(DbUtils.resultSetToTableModel(rs));
+           } catch (Exception e) {
+           JOptionPane.showMessageDialog(null, e);
+           }
+      
+    }//GEN-LAST:event_btn_show_tableActionPerformed
+
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+         String sql="delete from pos where P_id = ?";
+         try{
+         
+         rs=pstm.executeQuery(sql);}
+         
+         catch(Exception e){JOptionPane.showMessageDialog(null, e);}
+        //st.executeUpdate(); 
+        //try {
+           //pstm=con.prepareStatement(sql);
+          // pstm.setString(1,txt_id.getText());
+    // pstm.setString(2,txt_name.getText());
+     // pstm.setString(3,txt_price.getText());
+     // pstm.setString(4,txt_quantity.getText());
+     //pstm.setString(5,txt_amount.getText());
+           //stm=  con.createStatement();
+         //  rs=pstm.executeQuery(sql);
+           //disply_tab.setModel(DbUtils.resultSetToTableModel(rs));
+          // } catch (Exception e) {
+          // JOptionPane.showMessageDialog(null, e);
+          // }
+    }//GEN-LAST:event_btn_deleteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -276,7 +399,10 @@ String sum1=String.valueOf(sum);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_product_add;
+    private javax.swing.JButton btn_show_table;
+    private javax.swing.JTable disply_tab;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -285,6 +411,7 @@ String sum1=String.valueOf(sum);
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField txt_amount;
     private javax.swing.JTextField txt_id;
     private javax.swing.JTextField txt_name;
